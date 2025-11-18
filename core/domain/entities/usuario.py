@@ -43,4 +43,3 @@ class Usuario:
             raise ValueError("Nombre cannot exceed 255 characters")
         self.nombre = nuevo_nombre.strip()
         self.fecha_actualizacion = datetime.now(UTC)
-

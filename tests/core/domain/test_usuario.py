@@ -45,7 +45,9 @@ def test_create_usuario_nombre_too_long() -> None:
     email = EmailAddress("test@example.com")
     now = datetime.now(UTC)
     long_nombre = "a" * 256
-    with pytest.raises(ValueError, match="Nombre cannot exceed 255 characters"):
+    with pytest.raises(
+        ValueError, match="Nombre cannot exceed 255 characters"
+    ):
         Usuario(
             id=None,
             nombre=long_nombre,
@@ -118,4 +120,3 @@ def test_actualizar_nombre_empty() -> None:
     )
     with pytest.raises(ValueError, match="Nombre cannot be empty"):
         usuario.actualizar_nombre("")
-

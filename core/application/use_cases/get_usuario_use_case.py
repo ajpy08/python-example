@@ -3,7 +3,9 @@
 from typing import Optional
 
 from core.application.dto.usuario_dto import UsuarioResponseDto
-from core.application.ports.usuario_repository_port import UsuarioRepositoryPort
+from core.application.ports.usuario_repository_port import (
+    UsuarioRepositoryPort,
+)
 
 
 class GetUsuarioUseCase:
@@ -27,4 +29,3 @@ class GetUsuarioUseCase:
             fecha_creacion=usuario.fecha_creacion,
             fecha_actualizacion=usuario.fecha_actualizacion,
         )
-

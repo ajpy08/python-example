@@ -4,12 +4,25 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from core.application.dto.usuario_dto import CreateUsuarioDto, UpdateUsuarioDto
-from core.application.use_cases.create_usuario_use_case import CreateUsuarioUseCase
-from core.application.use_cases.delete_usuario_use_case import DeleteUsuarioUseCase
-from core.application.use_cases.get_usuario_use_case import GetUsuarioUseCase
-from core.application.use_cases.list_usuarios_use_case import ListUsuariosUseCase
-from core.application.use_cases.update_usuario_use_case import UpdateUsuarioUseCase
+from core.application.dto.usuario_dto import (
+    CreateUsuarioDto,
+    UpdateUsuarioDto,
+)
+from core.application.use_cases.create_usuario_use_case import (
+    CreateUsuarioUseCase,
+)
+from core.application.use_cases.delete_usuario_use_case import (
+    DeleteUsuarioUseCase,
+)
+from core.application.use_cases.get_usuario_use_case import (
+    GetUsuarioUseCase,
+)
+from core.application.use_cases.list_usuarios_use_case import (
+    ListUsuariosUseCase,
+)
+from core.application.use_cases.update_usuario_use_case import (
+    UpdateUsuarioUseCase,
+)
 from infrastructure.adapters.repositories.usuario_repository_postgres_adapter import (
     UsuarioRepositoryPostgresAdapter,
 )
@@ -23,7 +36,9 @@ from infrastructure.database.session import get_db
 router = APIRouter(prefix="/usuarios", tags=["usuarios"])
 
 
-def get_usuario_repository(db: Session = Depends(get_db)) -> UsuarioRepositoryPostgresAdapter:
+def get_usuario_repository(
+    db: Session = Depends(get_db),
+) -> UsuarioRepositoryPostgresAdapter:
     """Get usuario repository adapter."""
     return UsuarioRepositoryPostgresAdapter(db)
 
@@ -37,7 +52,9 @@ def get_usuario_repository(db: Session = Depends(get_db)) -> UsuarioRepositoryPo
 )
 def create_usuario(
     schema: CreateUsuarioSchema,
-    repository: UsuarioRepositoryPostgresAdapter = Depends(get_usuario_repository),
+    repository: UsuarioRepositoryPostgresAdapter = Depends(
+        get_usuario_repository
+    ),
 ) -> UsuarioResponseSchema:
     """Create a new usuario."""
     try:
@@ -65,7 +82,9 @@ def create_usuario(
 def list_usuarios(
     skip: int = 0,
     limit: int = 100,
-    repository: UsuarioRepositoryPostgresAdapter = Depends(get_usuario_repository),
+    repository: UsuarioRepositoryPostgresAdapter = Depends(
+        get_usuario_repository
+    ),
 ) -> List[UsuarioResponseSchema]:
     """List all usuarios."""
     use_case = ListUsuariosUseCase(repository)
@@ -81,7 +100,9 @@ def list_usuarios(
 )
 def get_usuario(
     usuario_id: int,
-    repository: UsuarioRepositoryPostgresAdapter = Depends(get_usuario_repository),
+    repository: UsuarioRepositoryPostgresAdapter = Depends(
+        get_usuario_repository
+    ),
 ) -> UsuarioResponseSchema:
     """Get usuario by id."""
     use_case = GetUsuarioUseCase(repository)
@@ -103,7 +124,9 @@ def get_usuario(
 def update_usuario(
     usuario_id: int,
     schema: UpdateUsuarioSchema,
-    repository: UsuarioRepositoryPostgresAdapter = Depends(get_usuario_repository),
+    repository: UsuarioRepositoryPostgresAdapter = Depends(
+        get_usuario_repository
+    ),
 ) -> UsuarioResponseSchema:
     """Update usuario."""
     try:
@@ -135,7 +158,9 @@ def update_usuario(
 )
 def delete_usuario(
     usuario_id: int,
-    repository: UsuarioRepositoryPostgresAdapter = Depends(get_usuario_repository),
+    repository: UsuarioRepositoryPostgresAdapter = Depends(
+        get_usuario_repository
+    ),
 ) -> None:
     """Delete usuario."""
     use_case = DeleteUsuarioUseCase(repository)
@@ -145,4 +170,3 @@ def delete_usuario(
             status_code=status.HTTP_404_NOT_FOUND,
             detail=f"Usuario with id {usuario_id} not found",
         )
-

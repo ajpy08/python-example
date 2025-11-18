@@ -31,4 +31,3 @@ class UsuarioRepositoryPort(Protocol):
     def delete(self, usuario_id: int) -> bool:
         """Delete a usuario by id."""
         ...
-

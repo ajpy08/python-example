@@ -2,8 +2,13 @@
 
 from typing import Optional
 
-from core.application.dto.usuario_dto import UpdateUsuarioDto, UsuarioResponseDto
-from core.application.ports.usuario_repository_port import UsuarioRepositoryPort
+from core.application.dto.usuario_dto import (
+    UpdateUsuarioDto,
+    UsuarioResponseDto,
+)
+from core.application.ports.usuario_repository_port import (
+    UsuarioRepositoryPort,
+)
 from core.domain.value_objects.email_address import EmailAddress
 
 
@@ -30,7 +35,9 @@ class UpdateUsuarioUseCase:
             # Check if new email already exists
             existing_usuario = self._usuario_repository.get_by_email(dto.email)
             if existing_usuario and existing_usuario.id != usuario_id:
-                raise ValueError(f"Usuario with email {dto.email} already exists")
+                raise ValueError(
+                    f"Usuario with email {dto.email} already exists"
+                )
             usuario.email = EmailAddress(dto.email)
 
         if dto.activo is not None:
@@ -51,4 +58,3 @@ class UpdateUsuarioUseCase:
             fecha_creacion=updated_usuario.fecha_creacion,
             fecha_actualizacion=updated_usuario.fecha_actualizacion,
         )
-

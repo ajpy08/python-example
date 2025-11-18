@@ -7,4 +7,3 @@ from infrastructure.database.session import engine
 def init_db() -> None:
     """Create all database tables."""
     Base.metadata.create_all(bind=engine)
-

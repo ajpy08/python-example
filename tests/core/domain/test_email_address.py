@@ -36,4 +36,3 @@ def test_email_immutability() -> None:
     # Should be frozen dataclass
     with pytest.raises(Exception):
         email.value = "new@example.com"
-

@@ -1,6 +1,8 @@
 """Delete usuario use case."""
 
-from core.application.ports.usuario_repository_port import UsuarioRepositoryPort
+from core.application.ports.usuario_repository_port import (
+    UsuarioRepositoryPort,
+)
 
 
 class DeleteUsuarioUseCase:
@@ -13,4 +15,3 @@ class DeleteUsuarioUseCase:
     def execute(self, usuario_id: int) -> bool:
         """Execute the delete usuario use case."""
         return self._usuario_repository.delete(usuario_id)
-

@@ -51,4 +51,3 @@ def test_get_usuario_not_found() -> None:
     # Assert
     assert result is None
     mock_repository.get_by_id.assert_called_once_with(999)
-

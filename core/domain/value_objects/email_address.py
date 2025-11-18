@@ -26,4 +26,3 @@ class EmailAddress:
     def __str__(self) -> str:
         """Return email as string."""
         return self.value
-

@@ -33,4 +33,3 @@ class UsuarioResponseDto:
     activo: bool
     fecha_creacion: datetime
     fecha_actualizacion: datetime
-

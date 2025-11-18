@@ -1,6 +1,5 @@
 """Tests for usuario router."""
 
-from datetime import datetime
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
@@ -15,12 +14,16 @@ def client():
     """Create a test client."""
     # Override get_db dependency
     from infrastructure.database.session import get_db
-    
+
     # Create test database engine
-    engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
+    engine = create_engine(
+        "sqlite:///:memory:", connect_args={"check_same_thread": False}
+    )
     Base.metadata.create_all(bind=engine)
-    session_factory = sessionmaker(bind=engine, autocommit=False, autoflush=False)
-    
+    session_factory = sessionmaker(
+        bind=engine, autocommit=False, autoflush=False
+    )
+
     def override_get_db():
         # Ensure tables exist before creating session
         Base.metadata.create_all(bind=engine)
@@ -33,13 +36,13 @@ def client():
             raise
         finally:
             session.close()
-    
+
     app.dependency_overrides.clear()
     app.dependency_overrides[get_db] = override_get_db
-    
+
     with TestClient(app) as test_client:
         yield test_client
-    
+
     app.dependency_overrides.clear()
     Base.metadata.drop_all(bind=engine)
     engine.dispose()
@@ -181,4 +184,3 @@ def test_delete_usuario(client) -> None:
     # Verify deleted
     get_response = client.get(f"/usuarios/{usuario_id}")
     assert get_response.status_code == 404
-

@@ -4,7 +4,9 @@ from typing import List, Optional
 
 from sqlalchemy.orm import Session
 
-from core.application.ports.usuario_repository_port import UsuarioRepositoryPort
+from core.application.ports.usuario_repository_port import (
+    UsuarioRepositoryPort,
+)
 from core.domain.entities.usuario import Usuario
 from core.domain.value_objects.email_address import EmailAddress
 from infrastructure.database.models.usuario_model import UsuarioModel
@@ -34,7 +36,11 @@ class UsuarioRepositoryPostgresAdapter(UsuarioRepositoryPort):
 
     def get_by_id(self, usuario_id: int) -> Optional[Usuario]:
         """Get usuario by id."""
-        db_usuario = self._db.query(UsuarioModel).filter(UsuarioModel.id == usuario_id).first()
+        db_usuario = (
+            self._db.query(UsuarioModel)
+            .filter(UsuarioModel.id == usuario_id)
+            .first()
+        )
         if not db_usuario:
             return None
         return self._to_domain_entity(db_usuario)
@@ -42,7 +48,9 @@ class UsuarioRepositoryPostgresAdapter(UsuarioRepositoryPort):
     def get_by_email(self, email: str) -> Optional[Usuario]:
         """Get usuario by email."""
         db_usuario = (
-            self._db.query(UsuarioModel).filter(UsuarioModel.email == email).first()
+            self._db.query(UsuarioModel)
+            .filter(UsuarioModel.email == email)
+            .first()
         )
         if not db_usuario:
             return None
@@ -53,7 +61,10 @@ class UsuarioRepositoryPostgresAdapter(UsuarioRepositoryPort):
         db_usuarios = (
             self._db.query(UsuarioModel).offset(skip).limit(limit).all()
         )
-        return [self._to_domain_entity(db_usuario) for db_usuario in db_usuarios]
+        return [
+            self._to_domain_entity(db_usuario)
+            for db_usuario in db_usuarios
+        ]
 
     def update(self, usuario: Usuario) -> Usuario:
         """Update an existing usuario."""
@@ -61,7 +72,9 @@ class UsuarioRepositoryPostgresAdapter(UsuarioRepositoryPort):
             raise ValueError("Usuario id is required for update")
 
         db_usuario = (
-            self._db.query(UsuarioModel).filter(UsuarioModel.id == usuario.id).first()
+            self._db.query(UsuarioModel)
+            .filter(UsuarioModel.id == usuario.id)
+            .first()
         )
         if not db_usuario:
             raise ValueError(f"Usuario with id {usuario.id} not found")
@@ -79,7 +92,9 @@ class UsuarioRepositoryPostgresAdapter(UsuarioRepositoryPort):
     def delete(self, usuario_id: int) -> bool:
         """Delete a usuario by id."""
         db_usuario = (
-            self._db.query(UsuarioModel).filter(UsuarioModel.id == usuario_id).first()
+            self._db.query(UsuarioModel)
+            .filter(UsuarioModel.id == usuario_id)
+            .first()
         )
         if not db_usuario:
             return False
@@ -99,4 +114,3 @@ class UsuarioRepositoryPostgresAdapter(UsuarioRepositoryPort):
             fecha_creacion=db_usuario.fecha_creacion,
             fecha_actualizacion=db_usuario.fecha_actualizacion,
         )
-

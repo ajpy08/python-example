@@ -22,4 +22,3 @@ def get_db() -> Session:
         yield db
     finally:
         db.close()
-

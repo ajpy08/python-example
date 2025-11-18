@@ -2,8 +2,13 @@
 
 from datetime import UTC, datetime
 
-from core.application.dto.usuario_dto import CreateUsuarioDto, UsuarioResponseDto
-from core.application.ports.usuario_repository_port import UsuarioRepositoryPort
+from core.application.dto.usuario_dto import (
+    CreateUsuarioDto,
+    UsuarioResponseDto,
+)
+from core.application.ports.usuario_repository_port import (
+    UsuarioRepositoryPort,
+)
 from core.domain.entities.usuario import Usuario
 from core.domain.value_objects.email_address import EmailAddress
 
@@ -46,4 +51,3 @@ class CreateUsuarioUseCase:
             fecha_creacion=created_usuario.fecha_creacion,
             fecha_actualizacion=created_usuario.fecha_actualizacion,
         )
-

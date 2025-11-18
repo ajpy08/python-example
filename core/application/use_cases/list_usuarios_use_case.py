@@ -3,7 +3,9 @@
 from typing import List
 
 from core.application.dto.usuario_dto import UsuarioResponseDto
-from core.application.ports.usuario_repository_port import UsuarioRepositoryPort
+from core.application.ports.usuario_repository_port import (
+    UsuarioRepositoryPort,
+)
 
 
 class ListUsuariosUseCase:
@@ -13,7 +15,9 @@ class ListUsuariosUseCase:
         """Initialize use case with repository port."""
         self._usuario_repository = usuario_repository
 
-    def execute(self, skip: int = 0, limit: int = 100) -> List[UsuarioResponseDto]:
+    def execute(
+        self, skip: int = 0, limit: int = 100
+    ) -> List[UsuarioResponseDto]:
         """Execute the list usuarios use case."""
         usuarios = self._usuario_repository.get_all(skip=skip, limit=limit)
 
@@ -28,4 +32,3 @@ class ListUsuariosUseCase:
             )
             for usuario in usuarios
         ]
-

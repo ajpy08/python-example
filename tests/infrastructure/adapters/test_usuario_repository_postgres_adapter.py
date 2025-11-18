@@ -7,7 +7,7 @@ from sqlalchemy.orm import sessionmaker
 
 from core.domain.entities.usuario import Usuario
 from core.domain.value_objects.email_address import EmailAddress
-from infrastructure.adapters.repositories.usuario_repository_postgres_adapter import (
+from infrastructure.adapters.repositories.usuario_repository_postgres_adapter import (  # noqa: E501
     UsuarioRepositoryPostgresAdapter,
 )
 from infrastructure.database.models.usuario_model import Base
@@ -16,9 +16,13 @@ from infrastructure.database.models.usuario_model import Base
 @pytest.fixture
 def db_session():
     """Create a test database session."""
-    engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
+    engine = create_engine(
+        "sqlite:///:memory:", connect_args={"check_same_thread": False}
+    )
     Base.metadata.create_all(bind=engine)
-    session_factory = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+    session_factory = sessionmaker(
+        bind=engine, autocommit=False, autoflush=False
+    )
     session = session_factory()
     try:
         yield session
@@ -201,4 +205,3 @@ def test_delete_usuario_not_found(db_session) -> None:
 
     # Assert
     assert result is False
-

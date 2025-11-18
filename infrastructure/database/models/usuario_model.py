@@ -25,4 +25,3 @@ class UsuarioModel(Base):
     fecha_actualizacion = Column(
         DateTime, default=utc_now, onupdate=utc_now, nullable=False
     )
-

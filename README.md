@@ -270,6 +270,49 @@ flake8 core infrastructure tests
 mypy core infrastructure
 ```
 
+### Corrección automática de errores
+
+Para corregir automáticamente la mayoría de errores de flake8 (líneas largas, espacios en blanco, etc.), puedes usar:
+
+#### Opción 1: autopep8 (recomendado)
+
+```bash
+# Instalar autopep8 si no está instalado
+pip install autopep8
+
+# Corregir automáticamente todos los errores corregibles
+autopep8 --in-place --aggressive --aggressive -r core infrastructure tests
+
+# Ver qué cambios haría sin aplicarlos
+autopep8 --diff -r core infrastructure tests
+```
+
+#### Opción 2: black (formateador automático)
+
+```bash
+# Instalar black si no está instalado
+pip install black
+
+# Formatear todo el código (puede cambiar el estilo)
+black core infrastructure tests
+
+# Ver qué cambios haría sin aplicarlos
+black --diff core infrastructure tests
+```
+
+#### Opción 3: Corrección manual de errores comunes
+
+```bash
+# Eliminar líneas en blanco al final de archivos (W391)
+# En Linux/Mac:
+find . -name "*.py" -exec sed -i '' -e :a -e '/^\n*$/{$d;N;ba' -e '}' {} \;
+
+# En Windows (Git Bash):
+find . -name "*.py" -exec sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' {} \;
+```
+
+**Nota:** `autopep8` es más conservador y solo corrige errores de flake8, mientras que `black` reformatea todo el código según su propio estilo. Se recomienda usar `autopep8` para mantener el estilo actual del proyecto.
+
 ## 🐳 Docker
 
 ### Iniciar PostgreSQL

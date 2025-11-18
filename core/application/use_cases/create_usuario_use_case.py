@@ -1,7 +1,6 @@
 """Create usuario use case."""
 
 from datetime import UTC, datetime
-from typing import Optional
 
 from core.application.dto.usuario_dto import CreateUsuarioDto, UsuarioResponseDto
 from core.application.ports.usuario_repository_port import UsuarioRepositoryPort

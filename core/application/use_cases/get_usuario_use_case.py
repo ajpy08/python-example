@@ -4,7 +4,6 @@ from typing import Optional
 
 from core.application.dto.usuario_dto import UsuarioResponseDto
 from core.application.ports.usuario_repository_port import UsuarioRepositoryPort
-from core.domain.entities.usuario import Usuario
 
 
 class GetUsuarioUseCase:

@@ -27,11 +27,23 @@ class Usuario:
 
     def activar(self) -> None:
         """Activate the usuario."""
+        from core.domain.services.usuario_domain_service import (
+            UsuarioDomainService,
+        )
+
+        if not UsuarioDomainService.puede_activar_usuario(self):
+            raise ValueError("Usuario ya está activo")
         self.activo = True
         self.fecha_actualizacion = datetime.now(UTC)
 
     def desactivar(self) -> None:
         """Deactivate the usuario."""
+        from core.domain.services.usuario_domain_service import (
+            UsuarioDomainService,
+        )
+
+        if not UsuarioDomainService.puede_desactivar_usuario(self):
+            raise ValueError("Usuario ya está inactivo")
         self.activo = False
         self.fecha_actualizacion = datetime.now(UTC)
 

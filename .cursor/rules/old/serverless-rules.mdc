@@ -1,0 +1,109 @@
+---
+alwaysApply: false
+---
+
+# Cursor Rules – Versión B (Python Serverless + AWS SAM + API Gateway con Arquitectura Hexagonal)
+
+## 1. Arquitectura Serverless con Clean Architecture
+- Mantener la estructura hexagonal pero orientada a eventos.
+- Separación estricta:
+- **core/domain/** → entidades de negocio.
+- **core/application/** → casos de uso + puertos.
+- **infrastructure/** → adaptadores AWS (DynamoDB, S3, SNS, SQS, EventBridge, SecretsManager…).
+- **handlers/** → Lambdas (adaptador primario). Son "controllers" serverless.
+- Los handlers solo deben:
+1. Parsear el evento de entrada (API Gateway o EventBridge)
+2. Invocar caso de uso
+3. Formatear la respuesta
+
+
+## 2. Puertos (Interfaces)
+- Todos los accesos a AWS también deben ser puertos.
+- Ejemplos:
+```python
+class StoragePort(Protocol):
+async def upload(self, key: str, data: bytes) -> str: ...
+```
+- DynamoDB, S3, SQS, SecretsManager deben entrar por adaptadores.
+
+## 3. Adaptadores AWS (Infraestructura)
+Ubicados en `infrastructure/aws/` o `infrastructure/adapters/aws/`.
+Ejemplos:
+- `DynamoDBPedidoRepositoryAdapter`
+- `S3BucketAdapter`
+- `SNSPublisherAdapter`
+- `CognitoAuthAdapter`
+
+
+### Reglas
+- Deben implementar un puerto.
+- No deben contener reglas de negocio.
+- Manejar errores propios de AWS (botocore exceptions).
+
+
+## 4. Handlers (Lambda Entrypoints)
+Ubicados en `handlers/`.
+- Un handler = un adaptador primario.
+- Formato recomendado:
+```python
+def handler(event, context):
+request = ApiGatewayRequest(event) # adapter opcional
+caso_de_uso = build_use_case() # fabrica
+resultado = caso_de_uso.ejecutar(request.data)
+return respuesta_apigateway(resultado)
+```
+- No usar lógica de negocio dentro del handler.
+- No usar directly boto3 dentro del handler.
+
+
+## 5. AWS SAM Rules
+- Template organizado en recursos por dominio.
+- Privilegios mínimos:
+- Solo las Lambdas que necesitan S3 pueden usar S3.
+- Solo las Lambdas que necesitan DynamoDB tienen acceso al item.
+- Variables de entorno definidas únicamente en el template.
+
+
+## 6. API Gateway
+- Para REST usar **Lambda Proxy Integration**.
+- Formato estándar de respuesta:
+```python
+return {
+"statusCode": 200,
+"headers": {"Content-Type": "application/json"},
+"body": json.dumps(data)
+}
+```
+
+
+## 7. Logs y Observabilidad
+- Usar `aws_lambda_powertools` (si permitido):
+- Logger
+- Tracer (X-Ray)
+- Metrics
+- Nunca registrar PII o secretos.
+
+
+## 8. Testing
+- Unit tests del core sin AWS.
+- Mock de SDK usando `moto`, `pytest-mock` o `botocore.stub`.
+- Tests locales con:
+- `sam local invoke`
+- `sam local start-api`
+
+
+## 9. Reglas de Estilo
+- PEP8
+- snake_case
+- type hints obligatorios
+- No estado global compartido
+- Factory functions para crear adaptadores según el entorno
+
+
+---
+
+
+Si deseas, puedo generar también:
+- **README comparando versión A vs B**
+- **Diagrama de arquitectura**
+- **Plantillas base del proyecto**

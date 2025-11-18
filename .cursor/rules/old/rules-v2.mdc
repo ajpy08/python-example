@@ -1,0 +1,33 @@
+---
+alwaysApply: false
+---
+# Cursor Rules (Versión 2 - Genérica)
+
+Esta versión es más flexible y aplicable a cualquier proyecto, sin reglas estrictas.
+
+## 1. Estructura del proyecto
+- Se recomienda seguir principios de **arquitectura limpia**.
+- Mantener separación entre dominio, aplicación e infraestructura.
+- Es recomendable usar adaptadores y puertos, pero no obligatorio.
+
+## 2. Estilo de código
+- Mantener un estilo consistente (PEP8 recomendado pero negociable).
+- Puedes usar f-strings libremente.
+- Comillas simples o dobles, pero consistentes.
+- Uso opcional de type hints.
+- Sin restricciones sobre `else`.
+- Organización de imports sugerida pero no obligatoria.
+
+## 3. Testing
+- Uso sugerido de pytest.
+- Aserciones libres (`assert`, expects, unittest, etc.).
+- Fixtures opcionales.
+- Recomendado realizar pruebas unitarias, pero no se exige cobertura total.
+
+## 4. CI/CD
+- Linter opcional (flake8, ruff o pylint).
+- Tests automáticos recomendados.
+
+## 5. Microservicios
+- Puede usarse FastAPI, Flask o cualquier framework.
+- Configuración libre: `.env`, settings.py, pydantic, etc.

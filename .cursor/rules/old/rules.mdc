@@ -1,0 +1,43 @@
+---
+alwaysApply: false
+---
+# Cursor Rules (Versión 1)
+
+Esta versión está basada **estrictamente** en tus políticas internas del documento original.
+
+## 1. Arquitectura
+- Uso obligatorio de **arquitectura hexagonal**: dominio, puertos y adaptadores.
+- La lógica de negocio **no depende de infraestructura**.
+- Cualquier tecnología externa debe entrar por un **puerto**.
+- Estructura clara: `core/domain`, `core/application`, `core/ports`, `infrastructure/adapters`, `infrastructure/api`.
+
+## 2. Estilo y buenas prácticas
+- Seguir **PEP8** al 100%.
+- Uso de **flake8** + **wemake-python-styleguide** como reglas de calidad.
+- **Comillas simples** siempre.
+- **Prohibido** usar f-strings; usar `str.format()`.
+- Clases base deben heredar de `object`.
+- Uso de kwargs cuando una función recibe **más de dos argumentos**.
+- Evitar uso de `else` siempre que sea posible.
+- Nombres de funciones/métodos/variables en **snake_case**.
+- Imports organizados con **isort**.
+
+## 3. Testing
+- Testing obligatorio con **pytest**.
+- Aserciones con **expects**.
+- Pruebas por espejo en carpeta `tests/`.
+- Fixtures para código repetitivo.
+- Prohibido integrar código sin pruebas.
+- Pruebas de integración usando FastAPI TestClient.
+
+## 4. CI/CD y calidad
+- Ejecución obligatoria de `flake8` en cada PR.
+- Integración con Poetry: `poetry run flake8`, `poetry run pytest`.
+- No se aprueba ningún cambio si rompe las reglas del linter.
+
+## 5. Microservicios
+- Cada microservicio es autónomo.
+- FastAPI es la única alternativa aprobada.
+- Configuración mediante `pydantic.BaseSettings`.
+- Deben existir puertos para *toda* dependencia externa.
+

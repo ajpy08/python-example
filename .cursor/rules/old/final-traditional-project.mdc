@@ -1,0 +1,94 @@
+---
+alwaysApply: false
+---
+# Cursor Rules – Versión A (FastAPI)
+
+## 1. Principios Generales
+- Usa Clean Architecture y Arquitectura Hexagonal como base del diseño.
+- El código se organiza únicamente dentro de las carpetas `core` e `infrastructure`.
+- `core` nunca debe depender de `infrastructure`.
+- Ningún archivo en `core` debe importar frameworks, bases de datos, ni librerías externas.
+- La lógica de negocio debe vivir únicamente en domain y services.
+
+## 2. Estructura Oficial del Proyecto
+La herramienta debe generar siempre esta estructura exacta:
+
+project/
+├── core/
+│   ├── domain/
+│   │   ├── entities/
+│   │   ├── services/
+│   │   └── __init__.py
+│   ├── application/
+│   │   ├── ports/
+│   │   ├── use_cases/
+│   │   └── __init__.py
+│   └── __init__.py
+├── infrastructure/
+│   ├── adapters/
+│   │   └── __init__.py
+│   ├── api/
+│   │   ├── routers/
+│   │   ├── schemas/
+│   │   └── __init__.py
+│   ├── config/
+│   ├── database/
+│   │   ├── repositories/
+│   │   └── __init__.py
+│   └── __init__.py
+├── tests/
+├── pyproject.toml
+└── README.md
+
+## 3. Dominio (core/domain)
+### Entities
+- Modelos simples (dataclasses o clases).
+- Sin dependencias externas.
+- No deben incluir lógica de persistencia ni lógica relacionada a frameworks.
+
+### Domain Services
+- Implementan reglas de negocio puras.
+- No deben acceder a bases de datos, frameworks o servicios externos.
+- Solo usan entidades y otros servicios de dominio.
+
+## 4. Aplicación (core/application)
+### Puertos (ports)
+- Los puertos son interfaces (Protocol o ABC).
+- Definen dependencias abstractas como repositorios o servicios externos.
+- Nunca contienen código concreto.
+
+### Casos de uso (use_cases)
+- Coordinan entidades, servicios de dominio y puertos.
+- No deben conocer detalles de infraestructura.
+- No deben importar FastAPI ni adaptadores.
+
+## 5. Infraestructura (infrastructure)
+### Adaptadores
+- Implementaciones concretas de los puertos.
+- Pueden acceder a bases de datos, APIs externas u otras tecnologías.
+
+### API (FastAPI)
+Código en:
+- `infrastructure/api/routers`
+- `infrastructure/api/schemas`
+
+Routers:
+- No contienen reglas de negocio.
+- Solo validan input, llaman casos de uso y devuelven respuestas.
+
+Schemas:
+- Definidos con Pydantic exclusivamente.
+
+### Base de Datos
+Repositorios concretos en:
+`infrastructure/database/repositories/`
+
+## 6. Pruebas
+- Las pruebas del dominio se ubican en `tests/core/**`.
+- Las pruebas de infraestructura y API en `tests/infrastructure/**`.
+
+## 7. Convenciones
+- Ninguna regla de negocio debe existir en routers ni adaptadores.
+- Imports limpios y absolutos.
+- Nunca llamar adaptadores directamente desde use cases.
+- Los nombres deben ser claros y expresivos.

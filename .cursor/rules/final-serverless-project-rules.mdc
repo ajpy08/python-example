@@ -1,0 +1,162 @@
+---
+alwaysApply: false
+---
+# Cursor Rules — Versión B (Python, Serverless AWS SAM + API Gateway, Clean Architecture + Hexagonal)
+
+## Introducción
+Versión enterprise/estricta. Aplicable a equipos grandes y pipelines con fuertes reglas de calidad, auditoría y seguridad. Mantiene compatibilidad total con la Versión A (core idéntico) pero añade requisitos operativos y de naming adicionales y reglas para serverless.
+
+---
+
+## 1. Principios generales (obligatorio)
+- Python 3.9+ con type hints exhaustivos.
+- Arquitectura: Clean Architecture + Hexagonal (estricto).
+- Core (dominio + aplicación) **idéntico** entre A y B y **no** depende de infra.
+- Infraestructura separada y claramente documentada.
+
+---
+
+## 2. Estructura de carpetas obligatoria
+
+project/
+├── core/
+│ ├── domain/
+│ └── application/
+├── infrastructure/
+│ ├── adapters/
+│ ├── api/
+│ │ ├── handlers/ # Lambdas (API Gateway / Events)
+│ │ ├── routers/ # Optional for local FastAPI testing
+│ │ └── schemas/
+│ ├── database/
+│ ├── aws/ # factories, clients wrappers
+│ ├── config/
+│ └── init.py
+├── sam/
+│ └── template.yaml
+├── layers/ # optional shared lambda layers
+├── tests/
+└── README.md
+
+## 3. Naming rules — Enterprise (Obligatorio, estricto)
+- **Ports:** `PedidoRepositoryPort`, `NotificationPort`, `AuthPort`.
+- **Adapters:** `PedidoRepositoryAdapter`, `PedidoRepositoryDynamoAdapter`, `S3StorageAdapter`.
+- **UseCases:** `CreatePedidoUseCase`, `CancelPedidoUseCase`.
+- **DomainServices:** `PedidoDomainService`.
+- **DTOs / Schemas:** `CreatePedidoDto`, `PedidoResponseSchema`.
+- **Handlers (lambdas):** `create_pedido_handler.py` with function `lambda_handler`.
+- **Factories:** `build_pedido_repository_adapter()` en `infrastructure/aws/factories.py`.
+
+> Regla estricta: nombres deben incluir el patrón para facilitar auditoría y búsqueda.
+
+---
+
+## 4. Handlers / Lambdas (serverless rules)
+- Handlers en `infrastructure/api/handlers/`.
+- Handler pattern:
+  1. Parse event → validate with schema/DTO.
+  2. Build use case via factories (inject adapters via ports).
+  3. Ejecutar use case.
+  4. Mapear resultado → Lambda Proxy Response:
+     ```py
+     return {"statusCode": 200, "headers": {"Content-Type":"application/json"}, "body": json.dumps(payload)}
+     ```
+- **No** escribir lógica de negocio en handlers.
+- No usar `boto3` directamente en handlers; usar adaptadores AWS en `infrastructure/aws/` o `infrastructure/adapters/aws/`.
+
+---
+
+## 5. AWS SAM / infra as code
+- `sam/template.yaml` obligatorio con funciones, roles y variables.
+- IAM: **Principio de mínimos privilegios**. Cada función declara solo lo que necesita.
+- Environment vars definidas en SAM, no hardcodeadas.
+- Layers para dependencias comunes.
+
+---
+
+## 6. Ports & Adapters (reglas)
+- Todos los accesos a recursos externos deben tener un puerto definido y un adapter concreto.
+- Ejemplo:
+  - `core/application/ports/pedido_repository_port.py` (Protocol)
+  - `infrastructure/adapters/repositories/pedido_repository_dynamo_adapter.py`
+
+- Los adapters deben capturar y normalizar errores externos y lanzar excepciones de dominio o errores técnicos específicos.
+
+---
+
+## 7. Factories & Wiring
+- No wiring en core.
+- Factories responsables de instanciar adaptadores según entorno:
+  - `infrastructure/aws/factories.py` o `infrastructure/config/factories.py`.
+- Factories utilizadas por handlers para obtener instancias.
+
+---
+
+## 8. Testing (estricto)
+- **Coverage target**: establecer una meta (ej. 80%) en CI.
+- Tests:
+  - Unit: core/domain/use_cases sin infra.
+  - Integration: adaptadores con entorno controlado (moto, test DB).
+  - Handler tests: mocks de eventos y pruebas contra `sam local` en CI opcional.
+- Usar `pytest` con fixtures y `botocore.stub` / `moto` para mocks AWS.
+- Contract tests para API Gateway integration (opcional pero recomendado).
+
+---
+
+## 9. Quality gates / CI
+- Ejecutar en CI:
+  - flake8 (+ wemake)
+  - mypy (strict config)
+  - pytest (con cobertura)
+  - security checks (bandit o similar)
+- PRs no se pueden mergear si fallan gates.
+
+---
+
+## 10. Logging, observability & secrets
+- Logging: `aws_lambda_powertools` logger o `structlog`/`logging` con JSON estructurado.
+- Tracing: X-Ray o equivalente (instrumentar con powertools tracer).
+- Metrics: exportar métricas cuando aplique.
+- Secrets: usar Secrets Manager o Parameter Store; no hardcodear.
+
+---
+
+## 11. Performance & cold start
+- Evitar imports pesados en global scope del handler.
+- Factories deben crear clientes perezosamente.
+- Usar layers para dependencias grandes para optimizar tamaño de deployment.
+
+---
+
+## 12. Security
+- Validaciones de inputs estrictas.
+- Sanitizar datos antes de enviarlos a terceros.
+- Manejo de errores: no filtrar stack traces en respuestas públicas.
+- Políticas IAM revisadas y auditadas.
+
+---
+
+## 13. Prohibiciones y reglas críticas
+- No depender de infra desde core.
+- No código SQL/string concatenation insegura en adaptadores (usar parametrized queries).
+- No exponer secretos en logs.
+- No usar variables globales mutables compartidas entre invocaciones.
+
+---
+
+## 14. Generation behavior (Cursor specifics)
+- Cursor genera:
+  - Puertos (Protocol) y stubs de adapters.
+  - UseCase classes con inyección de puertos por constructor.
+  - Handler stubs que llaman factories y use cases.
+  - SAM template stub con recursos mínimos.
+- Cursor no genera implementaciones completas de adaptadores; crea plantillas con TODO y ejemplos seguros.
+
+---
+
+## 15. Naming enforcement (resumen)
+- Ports end with `Port` or `RepositoryPort`.
+- Adapters end with `Adapter` and may include tech suffix (`Dynamo`, `Postgres`, `S3`).
+- UseCases end with `UseCase`.
+- Handlers use `*_handler.py` and export `lambda_handler`.
+

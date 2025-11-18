@@ -1,0 +1,65 @@
+---
+alwaysApply: false
+---
+# Cursor Rules – Versión B (Proyectos Python Serverless: AWS SAM + API Gateway)
+
+
+## 1. Arquitectura
+- Usa una estructura basada en capas:
+- `core/` (dominio, lógica de negocio, modelos)
+- `application/` (casos de uso)
+- `infrastructure/` (adapters, AWS SDK interactions)
+- `handlers/` (lambdas expuestas por API Gateway)
+- La lógica de negocio nunca depende de AWS.
+- Handlers deben ser delgados.
+
+
+## 2. AWS SAM
+- Templates organizados en `template.yaml` o `sam-template.yaml`.
+- Cada Lambda debe tener:
+- Timeout explícito
+- MemorySize explícito
+- Políticas mínimas (Principio de privilegios mínimos)
+- Variables de entorno definidas solo en el template.
+
+
+## 3. API Gateway
+- Usar Lambda Proxy Integration.
+- Handlers deben devolver:
+```python
+return {
+'statusCode': 200,
+'headers': { 'Content-Type': 'application/json' },
+'body': json.dumps(response)
+}
+```
+- Validaciones previas dentro del handler o en un adapter.
+
+
+## 4. Estilo
+- PEP8, Snake_case, type hints obligatorios.
+- Evitar estado global.
+- Crear clases/funciones idempotentes.
+
+
+## 5. Dependencias
+- Usar `poetry` + `poetry export` si el runtime es Python puro.
+- Si se requiere layer, crear una carpeta `layers/` por cada dominio.
+
+
+## 6. Testing
+- Tests unitarios obligatorios.
+- Tests de integración usando `sam local invoke` o `sam local start-api`.
+- Mocking del SDK con `moto` o `botocore.stub`.
+
+
+## 7. Logs y observabilidad
+- Usar `aws_lambda_powertools` (si está permitido): logger, tracer, metrics.
+- Logs JSON estructurados.
+- No imprimir secretos.
+
+
+## 8. Documentación
+- README con instrucciones claras de despliegue.
+- Diagrama simple de arquitectura.
+- Descripción de los endpoints expuestos.

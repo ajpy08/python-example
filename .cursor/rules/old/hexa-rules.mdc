@@ -1,0 +1,79 @@
+---
+alwaysApply: false
+---
+
+# Cursor Rules – Versión A (General, basada en Arquitectura Hexagonal / Clean Architecture para Python)
+```
+project/
+├── core/
+│ ├── domain/
+│ │ └── entities/
+│ └── application/
+│ ├── ports/
+│ └── use_cases/
+├── infrastructure/
+│ ├── adapters/
+│ ├── database/
+│ └── aws/
+├── entrypoints/ (o api/)
+├── tests/
+└── pyproject.toml / requirements.txt
+```
+
+
+### Regla general
+➡️ **Si un archivo contiene lógica de negocio, debe vivir en core**.
+
+
+## 3. Puertos (Interfaces)
+- Crear interfaces en `core/application/ports/`.
+- Todo acceso externo (DB, S3, HTTP externo, cola, email, auth) debe definirse como un puerto.
+- Los puertos NO deben conocer detalles de AWS, SQLAlchemy ni frameworks.
+- Ejemplo mínimo:
+```python
+class PedidoRepositoryPort(Protocol):
+async def obtener(self, id: str) -> Pedido: ...
+```
+
+
+## 4. Adaptadores Secundarios (Infraestructura)
+- Implementar los puertos real en `infrastructure/adapters/`.
+- Ejemplos:
+- `PedidoRepositoryAdapter` (SQLAlchemy / DynamoDB)
+- `NotificationAdapter`
+- `S3StorageAdapter`
+- `AuthJWTAdapter`
+- Adaptadores pueden usar AWS SDK, SQLAlchemy, requests, etc.
+- Nunca contienen reglas de negocio.
+
+
+## 5. Adaptadores Primarios (Entradas)
+- HTTP (FastAPI, Flask u otro), CLI o eventos deben vivir en `/entrypoints`.
+- Deben:
+- Validar input
+- Invocar caso de uso
+- Formatear la respuesta
+- No deben contener lógica de negocio.
+
+
+## 6. Estilo y Código
+- PEP8 obligatorio.
+- snake_case para funciones/vars.
+- PascalCase para clases.
+- Usar `typing` en **todo**.
+- Funciones pequeñas, máximo 30–40 líneas.
+- No usar prints; usar logging.
+- Evitar side-effects globales.
+
+
+## 7. Testing
+- Tests unitarios sobre casos de uso y dominio.
+- Tests de integración opcionales para adaptadores.
+- Usar pytest.
+- Mocks para adaptadores externos.
+
+
+## 8. Documentación
+- README con arquitectura resumida.
+- Schema ASCII de capas.
+- Docstrings en dominio, casos de uso y adaptadores.

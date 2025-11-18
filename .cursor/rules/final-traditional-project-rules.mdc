@@ -1,0 +1,149 @@
+---
+alwaysApply: true
+---
+# Cursor Rules — Versión A (Python, FastAPI, Clean Architecture + Hexagonal)
+
+## Introducción
+Estas reglas definen cómo Cursor debe generar y organizar código Python siguiendo Clean Architecture y Arquitectura Hexagonal para proyectos tradicionales (FastAPI u otro framework HTTP). Son vinculantes para plantillas y generación de artefactos.
+
+---
+
+## 1. Principios generales
+- Lenguaje objetivo: **Python** (>=3.9).  
+- Arquitectura obligatoria: **Clean Architecture + Hexagonal (Ports & Adapters)**.  
+- Separación estricta de capas: `core` (dominio + aplicación) y `infrastructure` (adaptadores + api + db + config).  
+- El **core nunca depende de infrastructure**. Solo la infraestructura depende del core.
+- Todos los casos de uso y la lógica de negocio permanecen en `core`.
+
+---
+
+## 2. Estructura de carpetas requerida (exacta)
+
+project/
+├── core/
+│ ├── domain/
+│ │ ├── entities/
+│ │ ├── value_objects/
+│ │ ├── services/
+│ │ └── init.py
+│ ├── application/
+│ │ ├── ports/
+│ │ ├── use_cases/
+│ │ ├── dto/
+│ │ └── init.py
+│ └── init.py
+├── infrastructure/
+│ ├── adapters/
+│ │ ├── repositories/
+│ │ └── external/
+│ ├── api/
+│ │ ├── routers/
+│ │ ├── controllers/
+│ │ └── schemas/
+│ ├── database/
+│ │ ├── models/ # ORM mapping (if used)
+│ │ └── session.py
+│ ├── config/
+│ └── init.py
+├── tests/
+│ ├── core/
+│ └── infrastructure/
+├── pyproject.toml
+└── README.md
+
+## 3. Naming conventions (obligatorio)
+- **Entities:** `Pedido`, `Usuario`, `Producto` (singular, PascalCase).
+- **Value Objects:** `PedidoId`, `EmailAddress`, `Money`.
+- **Domain Services:** `PedidoDomainService`.
+- **Ports (interfaces):** suffix `Port` or domain role (e.g., `PedidoRepositoryPort`, `AuthPort`).
+- **Adapters (implementations):** suffix `Adapter` or include technology `PedidoRepositoryPostgresAdapter`, `S3StorageAdapter`.
+- **Use Cases:** suffix `UseCase` (e.g., `CreatePedidoUseCase`).
+- **DTOs / Schemas:** `CreatePedidoDto`, `PedidoResponseSchema` (Pydantic classes in `application/dto` or `infrastructure/api/schemas`).
+- **Routers / Controllers / Handlers:** `pedido_router.py`, `PedidoController`.
+- Filenames: snake_case; module names must reflect class or role (e.g., `pedido_repository_adapter.py`).
+
+> Regla: los puertos y adaptadores deben ser claramente distinguibles por nombre.
+
+---
+
+## 4. Core / Dominio ( reglas )
+- **Entities** y **Value Objects** deben ser puras: sin imports de infra. Dataclasses o clases puras recomendadas.
+- **Domain services** agrupan lógica de negocio que involucra múltiples entidades.
+- No persistencia ni llamadas a infra aquí — todo se hace a través de puertos.
+
+---
+
+## 5. Application (use cases y puertos)
+- **Use cases**: orquestan dominio + puertos. Deben estar en `core/application/use_cases/`.
+- **Puertos**: definirse como `Protocol` (typing.Protocol) o ABC en `core/application/ports/`.
+- Los use cases **reciben** objetos del dominio o DTOs y retornan resultados del dominio o DTOs.
+- Nunca importan implementaciones concretas; solo puertos.
+
+---
+
+## 6. Infrastructure (adaptadores, API, DB, config)
+- Implementaciones concretas de puertos en `infrastructure/adapters/`.
+- **Repositorio concreto** en `infrastructure/adapters/repositories/`.
+- **API/Controllers** en `infrastructure/api/controllers/` o `routers/`.
+- **Schemas** (Pydantic) en `infrastructure/api/schemas/`.
+- **Session/engine** en `infrastructure/database/session.py`.
+- Adaptadores pueden y deben usar bibliotecas como SQLAlchemy, boto3, requests, etc.
+
+---
+
+## 7. FastAPI / Interface layer rules
+- Routers/controllers: validar input (Pydantic) → mapear a DTO → invocar UseCase → mapear respuesta → HTTP response.
+- No colocar lógica de negocio en routers.
+- Documentación OpenAPI derivada desde Pydantic models.
+
+---
+
+## 8. Testing
+- `tests/core/` → tests unitarios de entidades, servicios y use cases (sin infra).
+- `tests/infrastructure/` → tests de adaptadores (pueden usar bases de datos en memoria o DB de test).
+- Usar `pytest`. `expects` es opcional; asserts estándar son aceptables.
+- Mockear únicamente puertos en tests de use cases.
+- Integración E2E: TestClient de FastAPI contra la app cuando sea necesario.
+
+---
+
+## 9. Quality / Style
+- PEP8 obligatorio; usar flake8 + wemake-python-styleguide en CI si el repo lo exige.
+- Type hints obligatorios en funciones públicas y métodos.
+- Docstrings (PEP257) en módulos, clases y funciones públicas.
+- No prints en producción; usar `logging`.
+- Evitar `else` innecesario y funciones excesivamente largas (>40 líneas).
+
+---
+
+## 10. Code generation rules (Cursor behavior)
+- Al generar código, Cursor debe:
+  - Crear puertos en `core/application/ports/`.
+  - Crear adaptador stub en `infrastructure/adapters/` con TODOs para completar.
+  - Generar use case en `core/application/use_cases/` con inyección de puertos por constructor.
+  - Generar router en `infrastructure/api/routers/` y esquema Pydantic en `infrastructure/api/schemas/`.
+  - No generar import directo de infra en core.
+
+---
+
+## 11. Misc / Ops
+- Configuración con `pydantic.BaseSettings` en `infrastructure/config/`.
+- Secrets nunca en código; usar env vars.
+- pyproject.toml con Poetry recomendado.
+
+---
+
+## 12. Prohibiciones estrictas
+- No importar infra desde core.
+- No implementar persistencia en entidades.
+- No colocar lógica de negocio en controllers/routers.
+- No singletons globales que mantengan estado mutable.
+
+---
+
+## 13. Naming enforcement (resumen obligatorio)
+- Ports: `XxxPort` or `XxxRepositoryPort`
+- Adapters: `XxxAdapter` or `Xxx{Technology}Adapter`
+- UseCases: `XxxUseCase`
+- Entities: singular PascalCase
+- DTOs: `XxxDto` or `XxxSchema`

@@ -1,0 +1,69 @@
+---
+alwaysApply: false
+---
+# Cursor Rules – Versión B (Serverless AWS SAM)
+
+## 1. Principios Generales
+- Usar Clean Architecture + Hexagonal estrictamente.
+- `core` nunca depende de `infrastructure`.
+- Los handlers de AWS Lambda solo enrutan solicitudes; no ejecutan lógica de negocio.
+- El código dentro de core debe ser idéntico entre versiones (reutilizable entre arquitecturas).
+
+## 2. Estructura Oficial del Proyecto
+Se usa la misma estructura que la Versión A, agregando handlers:
+
+project/
+├── core/
+│   ├── domain/
+│   ├── application/
+├── infrastructure/
+│   ├── adapters/
+│   ├── api/
+│   │   ├── handlers/
+│   │   ├── routers/      # opcional
+│   │   ├── schemas/
+│   │   └── __init__.py
+│   ├── config/
+│   ├── database/
+│   │   ├── repositories/
+├── sam/
+│   ├── template.yaml
+│   └── ...
+├── tests/
+
+## 3. Handlers Serverless (Lambda)
+- Los handlers se colocan en `infrastructure/api/handlers/`.
+- Deben:
+  - Recibir evento y contexto.
+  - Validar entrada usando schemas.
+  - Llamar un caso de uso.
+  - Convertir output en el formato de API Gateway Proxy Response.
+- Prohibido:
+  - Colocar lógica de negocio.
+  - Llamar directamente adaptadores concretos.
+  - Depender de frameworks innecesarios.
+
+## 4. Puertos y Casos de Uso
+- Son idénticos a la versión A.
+- No deben modificarse según la tecnología.
+- Los casos de uso deben ser 100% puros.
+
+## 5. Adaptadores
+- Implementaciones de puertos para DynamoDB, RDS, S3, etc.
+- Ubicadas siempre en:
+  - `infrastructure/adapters/`
+  - `infrastructure/database/repositories/`
+
+## 6. Integración con SAM
+Cursor debe generar:
+- `template.yaml` con:
+  - Lambdas
+  - API Gateway
+  - Permisos
+  - Variables de entorno
+  - Policies
+
+## 7. Convenciones
+- Los handlers nunca contienen lógica de dominio.
+- El dominio debe ser completamente reutilizable entre proyectos serverless y no-serverless.
+- Todos los adaptadores deben inicializarse mediante factories o en el startup del handler.

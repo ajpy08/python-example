@@ -1,5 +1,5 @@
 """Domain services."""
 
-from core.domain.services.usuario_domain_service import UsuarioDomainService
+from core.domain.services.user_domain_service import UserDomainService
 
-__all__ = ["UsuarioDomainService"]
+__all__ = ["UserDomainService"]

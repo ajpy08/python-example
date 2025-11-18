@@ -1,142 +1,136 @@
-# Usuarios API - CRUD con Clean Architecture
+# Users API - CRUD with Clean Architecture
 
-API REST para gestión de usuarios implementada con **FastAPI**, **PostgreSQL** y siguiendo los principios de **Clean Architecture** y **Arquitectura Hexagonal**.
+REST API for user management implemented with **FastAPI**, **PostgreSQL** following **Clean Architecture** and **Hexagonal Architecture** principles.
 
-## 📋 Características
+## 📋 Features
 
-- ✅ CRUD completo de usuarios (Create, Read, Update, Delete, List)
-- ✅ Arquitectura Clean Architecture + Hexagonal (Ports & Adapters)
-- ✅ Separación estricta de capas (Core e Infrastructure)
-- ✅ Documentación automática con Swagger/OpenAPI
-- ✅ Tests unitarios y de integración
-- ✅ PostgreSQL con Docker Compose
-- ✅ Type hints exhaustivos
-- ✅ Validación de datos con Pydantic
+- ✅ Complete CRUD for users (Create, Read, Update, Delete, List)
+- ✅ Clean Architecture + Hexagonal (Ports & Adapters)
+- ✅ Strict layer separation (Core and Infrastructure)
+- ✅ Automatic documentation with Swagger/OpenAPI
+- ✅ Unit and integration tests
+- ✅ PostgreSQL with Docker Compose
+- ✅ Comprehensive type hints
+- ✅ Data validation with Pydantic
 
-## 🏗️ Arquitectura
+## 🏗️ Architecture
 
-El proyecto sigue una arquitectura en capas estricta:
+The project follows a strict layered architecture:
 
 ```
 project/
-├── core/                    # Capa de dominio y aplicación (sin dependencias de infra)
-│   ├── domain/              # Entidades, Value Objects, Domain Services
+├── core/                    # Domain and application layer (no infra dependencies)
+│   ├── domain/              # Entities, Value Objects, Domain Services
 │   └── application/         # Use Cases, Ports (interfaces), DTOs
-├── infrastructure/          # Capa de infraestructura (depende de core)
-│   ├── adapters/           # Implementaciones de puertos (repositorios, servicios externos)
+├── infrastructure/          # Infrastructure layer (depends on core)
+│   ├── adapters/           # Port implementations (repositories, external services)
 │   ├── api/                 # FastAPI routers, schemas, controllers
 │   ├── database/            # SQLAlchemy models, session management
-│   └── config/              # Configuración (settings)
-└── tests/                   # Tests unitarios e integración
+│   └── config/              # Configuration (settings)
+└── tests/                   # Unit and integration tests
 ```
 
-### Principios
+### Principles
 
-- **Core nunca depende de Infrastructure**: El dominio y los casos de uso son independientes de la infraestructura
-- **Ports & Adapters**: Las interfaces (ports) están en `core/application/ports`, las implementaciones (adapters) en `infrastructure/adapters`
-- **Dependency Inversion**: Los use cases dependen de abstracciones (ports), no de implementaciones concretas
+- **Core never depends on Infrastructure**: Domain and use cases are independent of infrastructure
+- **Ports & Adapters**: Interfaces (ports) are in `core/application/ports`, implementations (adapters) in `infrastructure/adapters`
+- **Dependency Inversion**: Use cases depend on abstractions (ports), not concrete implementations
 
-## 🚀 Instalación y Configuración
+## 🚀 Installation and Setup
 
-### Prerrequisitos
+### Prerequisites
 
 - Python 3.9+
-- Docker y Docker Compose
+- Docker and Docker Compose
 - pip
 
-### Pasos
+### Steps
 
-1. **Clonar el repositorio** (si aplica)
+1. **Clone the repository** (if applicable)
 
-2. **Crear entorno virtual**
+2. **Create virtual environment**
 
 ```bash
 python -m venv venv
 
-# Activar entorno virtual:
-# - En Linux/Mac o Git Bash (Windows): 
+# Activate virtual environment:
+# - On Linux/Mac or Git Bash (Windows): 
 source venv/bin/activate
-# - En Git Bash (Windows) también puedes usar:
+# - On Git Bash (Windows) you can also use:
 source venv/Scripts/activate
-# - En CMD (Windows):
+# - On CMD (Windows):
 venv\Scripts\activate.bat
-# - En PowerShell (Windows):
+# - On PowerShell (Windows):
 venv\Scripts\Activate.ps1
 ```
 
-3. **Instalar dependencias**
+3. **Install dependencies**
 
-Primero actualiza pip (recomendado):
+First update pip (recommended):
 
 ```bash
 python -m pip install --upgrade pip
 ```
 
-Luego instala las dependencias:
+Then install dependencies:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**Nota:** Este proyecto usa `psycopg` (psycopg3) que tiene mejor soporte multiplataforma, incluyendo Windows.
+**Note:** This project uses `psycopg` (psycopg3) which has better cross-platform support, including Windows.
 
-4. **Configurar variables de entorno**
+4. **Configure environment variables**
 
-Copia el archivo de ejemplo y ajusta según necesites:
+Copy the example file and adjust as needed:
 
 ```bash
 cp env.example .env
 ```
 
-O crea manualmente un archivo `.env` en la raíz del proyecto:
+Or manually create a `.env` file in the project root:
 
 ```env
 # Database Configuration
 POSTGRES_USER=user
 POSTGRES_PASSWORD=password
-POSTGRES_DB=usuarios_db
+POSTGRES_DB=users_db
 POSTGRES_HOST=localhost
 POSTGRES_PORT=5432
 
 # Application Configuration
-APP_NAME=Usuarios API
+APP_NAME=Users API
 APP_VERSION=1.0.0
 DEBUG=True
 ```
 
-5. **Iniciar PostgreSQL con Docker Compose**
+5. **Start PostgreSQL with Docker Compose**
 
 ```bash
 docker-compose up -d
 ```
 
-6. **Inicializar la base de datos**
+6. **Initialize the database**
 
-Es necesario crear las tablas antes de usar la API. Ejecuta:
-
-```bash
-python -c "from infrastructure.database.init_db import init_db; init_db()"
-```
-
-O usando el script de Python directamente:
+You need to create the tables before using the API. Run:
 
 ```bash
-python infrastructure/database/init_db.py
+alembic upgrade head
 ```
 
-**Nota:** Este paso solo es necesario la primera vez o después de eliminar el volumen de Docker. Si ya tienes las tablas creadas, puedes omitir este paso.
+**Note:** This step is only necessary the first time or after deleting the Docker volume. If you already have the tables created, you can skip this step.
 
-7. **Ejecutar la aplicación**
+7. **Run the application**
 
 ```bash
 uvicorn main:app --reload
 ```
 
-La API estará disponible en `http://localhost:8000`
+The API will be available at `http://localhost:8000`
 
-## 📚 Documentación API
+## 📚 API Documentation
 
-Una vez que la aplicación esté corriendo, puedes acceder a:
+Once the application is running, you can access:
 
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
@@ -144,123 +138,123 @@ Una vez que la aplicación esté corriendo, puedes acceder a:
 
 ## 🔌 Endpoints
 
-### Usuarios
+### Users
 
-| Método | Endpoint | Descripción |
+| Method | Endpoint | Description |
 |--------|----------|-------------|
-| POST | `/usuarios` | Crear un nuevo usuario |
-| GET | `/usuarios` | Listar todos los usuarios (con paginación) |
-| GET | `/usuarios/{id}` | Obtener un usuario por ID |
-| PUT | `/usuarios/{id}` | Actualizar un usuario |
-| DELETE | `/usuarios/{id}` | Eliminar un usuario |
+| POST | `/users` | Create a new user |
+| GET | `/users` | List all users (with pagination) |
+| GET | `/users/{id}` | Get a user by ID |
+| PUT | `/users/{id}` | Update a user |
+| DELETE | `/users/{id}` | Delete a user |
 
-### Ejemplos de uso
+### Usage Examples
 
-#### Crear usuario
+#### Create user
 
 ```bash
-curl -X POST "http://localhost:8000/usuarios" \
+curl -X POST "http://localhost:8000/users" \
   -H "Content-Type: application/json" \
   -d '{
-    "nombre": "Juan Pérez",
-    "email": "juan@example.com",
-    "activo": true
+    "name": "John Doe",
+    "email": "john@example.com",
+    "active": true
   }'
 ```
 
-#### Listar usuarios
+#### List users
 
 ```bash
-curl "http://localhost:8000/usuarios?skip=0&limit=10"
+curl "http://localhost:8000/users?skip=0&limit=10"
 ```
 
-#### Obtener usuario por ID
+#### Get user by ID
 
 ```bash
-curl "http://localhost:8000/usuarios/1"
+curl "http://localhost:8000/users/1"
 ```
 
-#### Actualizar usuario
+#### Update user
 
 ```bash
-curl -X PUT "http://localhost:8000/usuarios/1" \
+curl -X PUT "http://localhost:8000/users/1" \
   -H "Content-Type: application/json" \
   -d '{
-    "nombre": "Juan Pérez Actualizado",
-    "activo": false
+    "name": "John Doe Updated",
+    "active": false
   }'
 ```
 
-#### Eliminar usuario
+#### Delete user
 
 ```bash
-curl -X DELETE "http://localhost:8000/usuarios/1"
+curl -X DELETE "http://localhost:8000/users/1"
 ```
 
 ## 🧪 Testing
 
-### Ejecutar todos los tests
+### Run all tests
 
 ```bash
 pytest
 ```
 
-### Ejecutar con cobertura
+### Run with coverage
 
 ```bash
 pytest --cov=core --cov=infrastructure --cov-report=html
 ```
 
-### Ejecutar tests específicos
+### Run specific tests
 
 ```bash
-# Tests del dominio
+# Domain tests
 pytest tests/core/domain/
 
-# Tests de casos de uso
+# Use case tests
 pytest tests/core/application/
 
-# Tests de infraestructura
+# Infrastructure tests
 pytest tests/infrastructure/
 ```
 
-## 📁 Estructura del Código
+## 📁 Code Structure
 
 ### Domain Layer (`core/domain`)
 
-- **Entities**: `Usuario` - Entidad de dominio pura
-- **Value Objects**: `EmailAddress` - Value object inmutable con validación
+- **Entities**: `User` - Pure domain entity
+- **Value Objects**: `EmailAddress` - Immutable value object with validation
 
 ### Application Layer (`core/application`)
 
-- **Ports**: `UsuarioRepositoryPort` - Interfaz del repositorio
+- **Ports**: `UserRepositoryPort` - Repository interface
 - **Use Cases**:
-  - `CreateUsuarioUseCase`
-  - `GetUsuarioUseCase`
-  - `ListUsuariosUseCase`
-  - `UpdateUsuarioUseCase`
-  - `DeleteUsuarioUseCase`
-- **DTOs**: DTOs para transferencia de datos entre capas
+  - `CreateUserUseCase`
+  - `GetUserUseCase`
+  - `ListUsersUseCase`
+  - `UpdateUserUseCase`
+  - `DeleteUserUseCase`
+- **DTOs**: DTOs for data transfer between layers
 
 ### Infrastructure Layer (`infrastructure`)
 
-- **Adapters**: `UsuarioRepositoryPostgresAdapter` - Implementación PostgreSQL del repositorio
-- **API**: Routers FastAPI, schemas Pydantic
+- **Adapters**: `UserRepositoryPostgresAdapter` - PostgreSQL repository implementation
+- **API**: FastAPI routers, Pydantic schemas
 - **Database**: SQLAlchemy models, session management
-- **Config**: Settings con Pydantic Settings
+- **Config**: Settings with Pydantic Settings
 
-## 🔧 Configuración de Desarrollo
+## 🔧 Development Configuration
 
 ### Code Quality
 
-El proyecto incluye configuración para:
+The project includes configuration for:
 
 - **flake8**: Linting
 - **mypy**: Type checking
-- **black**: Code formatting (opcional, no configurado en CI)
-- **pytest**: Testing con cobertura
+- **black**: Code formatting (optional, not configured in CI)
+- **pytest**: Testing with coverage
 
-### Ejecutar linters
+### Run linters
 
 ```bash
 # Flake8
@@ -270,134 +264,133 @@ flake8 core infrastructure tests
 mypy core infrastructure
 ```
 
-### Corrección automática de errores
+### Automatic error correction
 
-Para corregir automáticamente la mayoría de errores de flake8 (líneas largas, espacios en blanco, etc.), puedes usar:
+To automatically fix most flake8 errors (long lines, whitespace, etc.), you can use:
 
-#### Opción 1: autopep8 (recomendado)
+#### Option 1: autopep8 (recommended)
 
 ```bash
-# Instalar autopep8 si no está instalado
+# Install autopep8 if not installed
 pip install autopep8
 
-# Corregir automáticamente todos los errores corregibles
+# Automatically fix all fixable errors
 autopep8 --in-place --aggressive --aggressive -r core infrastructure tests
 
-# Ver qué cambios haría sin aplicarlos
+# See what changes it would make without applying them
 autopep8 --diff -r core infrastructure tests
 ```
 
-#### Opción 2: black (formateador automático)
+#### Option 2: black (automatic formatter)
 
 ```bash
-# Instalar black si no está instalado
+# Install black if not installed
 pip install black
 
-# Formatear todo el código (puede cambiar el estilo)
+# Format all code (may change style)
 black core infrastructure tests
 
-# Ver qué cambios haría sin aplicarlos
+# See what changes it would make without applying them
 black --diff core infrastructure tests
 ```
 
-#### Opción 3: Corrección manual de errores comunes
+#### Option 3: Manual correction of common errors
 
 ```bash
-# Eliminar líneas en blanco al final de archivos (W391)
-# En Linux/Mac:
+# Remove trailing blank lines (W391)
+# On Linux/Mac:
 find . -name "*.py" -exec sed -i '' -e :a -e '/^\n*$/{$d;N;ba' -e '}' {} \;
 
-# En Windows (Git Bash):
+# On Windows (Git Bash):
 find . -name "*.py" -exec sed -i -e :a -e '/^\n*$/{$d;N;ba' -e '}' {} \;
 ```
 
-**Nota:** `autopep8` es más conservador y solo corrige errores de flake8, mientras que `black` reformatea todo el código según su propio estilo. Se recomienda usar `autopep8` para mantener el estilo actual del proyecto.
+**Note:** `autopep8` is more conservative and only fixes flake8 errors, while `black` reformats all code according to its own style. It's recommended to use `autopep8` to maintain the current project style.
 
 ## 🐳 Docker
 
-### Iniciar PostgreSQL
+### Start PostgreSQL
 
 ```bash
 docker-compose up -d
 ```
 
-### Detener PostgreSQL
+### Stop PostgreSQL
 
 ```bash
 docker-compose down
 ```
 
-### Ver logs
+### View logs
 
 ```bash
 docker-compose logs -f postgres
 ```
 
-### Eliminar volúmenes (⚠️ elimina datos)
+### Delete volumes (⚠️ deletes data)
 
 ```bash
 docker-compose down -v
 ```
 
-## 📝 Convenciones de Naming
+## 📝 Naming Conventions
 
-Siguiendo las reglas del proyecto:
+Following project rules:
 
-- **Entities**: PascalCase singular (`Usuario`)
+- **Entities**: Singular PascalCase (`User`)
 - **Value Objects**: PascalCase (`EmailAddress`)
-- **Ports**: Sufijo `Port` (`UsuarioRepositoryPort`)
-- **Adapters**: Sufijo `Adapter` con tecnología (`UsuarioRepositoryPostgresAdapter`)
-- **Use Cases**: Sufijo `UseCase` (`CreateUsuarioUseCase`)
-- **DTOs**: Sufijo `Dto` (`CreateUsuarioDto`)
-- **Schemas**: Sufijo `Schema` (`CreateUsuarioSchema`)
+- **Ports**: `Port` suffix (`UserRepositoryPort`)
+- **Adapters**: `Adapter` suffix with technology (`UserRepositoryPostgresAdapter`)
+- **Use Cases**: `UseCase` suffix (`CreateUserUseCase`)
+- **DTOs**: `Dto` suffix (`CreateUserDto`)
+- **Schemas**: `Schema` suffix (`CreateUserSchema`)
 
-## 🔒 Validaciones
+## 🔒 Validations
 
-- **Email**: Formato válido y único en la base de datos
-- **Nombre**: No vacío, máximo 255 caracteres
-- **ID**: Validación de existencia en operaciones de actualización/eliminación
+- **Email**: Valid format and unique in database
+- **Name**: Not empty, maximum 255 characters
+- **ID**: Existence validation in update/delete operations
 
-## 🚨 Manejo de Errores
+## 🚨 Error Handling
 
-- **400 Bad Request**: Validación fallida o reglas de negocio violadas
-- **404 Not Found**: Recurso no encontrado
-- **500 Internal Server Error**: Errores del servidor
+- **400 Bad Request**: Validation failed or business rules violated
+- **404 Not Found**: Resource not found
+- **500 Internal Server Error**: Server errors
 
-## 📦 Dependencias Principales
+## 📦 Main Dependencies
 
-- **FastAPI**: Framework web
+- **FastAPI**: Web framework
 - **SQLAlchemy**: ORM
-- **Pydantic**: Validación y configuración
-- **psycopg** (psycopg3): Driver PostgreSQL moderno con mejor soporte multiplataforma
+- **Pydantic**: Validation and configuration
+- **psycopg** (psycopg3): Modern PostgreSQL driver with better cross-platform support
 - **pytest**: Testing framework
 
-## 🤝 Contribuir
+## 🤝 Contributing
 
-1. Seguir las convenciones de naming establecidas
-2. Mantener la separación de capas (core no depende de infrastructure)
-3. Escribir tests para nuevas funcionalidades
-4. Asegurar que todos los tests pasen antes de hacer commit
+1. Follow established naming conventions
+2. Maintain layer separation (core does not depend on infrastructure)
+3. Write tests for new features
+4. Ensure all tests pass before committing
 
-## 📄 Licencia
+## 📄 License
 
-Este proyecto es un PoC/ejemplo educativo.
+This project is an educational PoC/example.
 
 ## 🆘 Troubleshooting
 
-### Error de conexión a la base de datos
+### Database connection error
 
-- Verificar que PostgreSQL esté corriendo: `docker-compose ps`
-- Verificar variables de entorno en `.env`
-- Verificar que el puerto 5432 no esté ocupado
+- Verify PostgreSQL is running: `docker-compose ps`
+- Verify environment variables in `.env`
+- Verify port 5432 is not occupied
 
-### Error al crear tablas
+### Error creating tables
 
-- Verificar permisos de la base de datos
-- Verificar que la base de datos exista
-- Revisar logs: `docker-compose logs postgres`
+- Verify database permissions
+- Verify database exists
+- Check logs: `docker-compose logs postgres`
 
-### Tests fallan
+### Tests fail
 
-- Verificar que las dependencias estén instaladas: `pip install -r requirements.txt`
-- Ejecutar tests con `-v` para más detalles: `pytest -v`
-
+- Verify dependencies are installed: `pip install -r requirements.txt`
+- Run tests with `-v` for more details: `pytest -v`

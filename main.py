@@ -4,7 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
-from infrastructure.api.routers.usuario_router import router as usuario_router
+from infrastructure.api.routers.user_router import router as user_router
 from infrastructure.config.settings import settings
 from infrastructure.database.init_db import init_db
 
@@ -16,7 +16,7 @@ from infrastructure.database.init_db import init_db
 app = FastAPI(
     title=settings.app_name,
     version=settings.app_version,
-    description="API REST para gestión de usuarios con Clean Architecture",
+    description="REST API for user management with Clean Architecture",
     docs_url="/docs",
     redoc_url=None,  # Disable default ReDoc to use custom endpoint below
     openapi_url="/openapi.json",
@@ -32,14 +32,14 @@ app.add_middleware(
 )
 
 # Include routers
-app.include_router(usuario_router)
+app.include_router(user_router)
 
 
 @app.get("/", tags=["root"])
 def root() -> dict:
     """Root endpoint."""
     return {
-        "message": "Usuarios API",
+        "message": "Users API",
         "version": settings.app_version,
         "docs": "/docs",
     }
@@ -62,7 +62,7 @@ async def redoc_html() -> HTMLResponse:
     <!DOCTYPE html>
     <html>
         <head>
-            <title>Usuarios API - ReDoc</title>
+            <title>Users API - ReDoc</title>
             <meta charset="utf-8"/>
             <meta name="viewport" content="width=device-width, initial-scale=1">
             <link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,700|Roboto:300,400,700" rel="stylesheet">

@@ -20,7 +20,7 @@ class Settings(BaseSettings):
     postgres_port: int = 5432
 
     # Application
-    app_name: str = "Usuarios API"
+    app_name: str = "Users API"
     app_version: str = "1.0.0"
     debug: bool = True
 

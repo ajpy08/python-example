@@ -1,6 +1,6 @@
 """Initialize database tables."""
 
-from infrastructure.database.models.usuario_model import Base
+from infrastructure.database.models.user_model import Base
 from infrastructure.database.session import engine
 
 

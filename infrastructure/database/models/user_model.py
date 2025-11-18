@@ -1,4 +1,4 @@
-"""Usuario database model."""
+"""User database model."""
 
 from datetime import UTC, datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime
@@ -12,16 +12,19 @@ def utc_now() -> datetime:
     return datetime.now(UTC)
 
 
-class UsuarioModel(Base):
-    """Usuario ORM model."""
+class UserModel(Base):
+    """User ORM model."""
 
-    __tablename__ = "usuarios"
+    __tablename__ = "users"
 
     id = Column(Integer, primary_key=True, index=True)
-    nombre = Column(String(255), nullable=False)
+    name = Column(String(255), nullable=False)
     email = Column(String(255), unique=True, nullable=False, index=True)
-    activo = Column(Boolean, default=True, nullable=False)
-    fecha_creacion = Column(DateTime, default=utc_now, nullable=False)
-    fecha_actualizacion = Column(
-        DateTime, default=utc_now, onupdate=utc_now, nullable=False
+    active = Column(Boolean, default=True, nullable=False)
+    created_at = Column(DateTime, default=utc_now, nullable=False)
+    updated_at = Column(
+        DateTime,
+        default=utc_now,
+        onupdate=utc_now,
+        nullable=False,
     )

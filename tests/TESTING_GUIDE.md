@@ -1,144 +1,143 @@
-# Guía de Testing - Clean Architecture
+# Testing Guide - Clean Architecture
 
-## ¿Qué debe tener pruebas?
+## What Should Have Tests?
 
-### ✅ DEBE tener pruebas
+### ✅ MUST have tests
 
 #### 1. **Core/Domain - Entities** ✅
-- **Ubicación**: `tests/core/domain/entities/test_*.py`
-- **Qué testear**: Validaciones, invariantes, métodos de negocio
-- **Ejemplo**: `test_usuario.py`
-- **Estado**: ✅ Completo
+- **Location**: `tests/core/domain/entities/test_*.py`
+- **What to test**: Validations, invariants, business methods
+- **Example**: `test_user.py`
+- **Status**: ✅ Complete
 
 #### 2. **Core/Domain - Value Objects** ✅
-- **Ubicación**: `tests/core/domain/value_objects/test_*.py`
-- **Qué testear**: Validaciones, inmutabilidad, comparaciones
-- **Ejemplo**: `test_email_address.py`
-- **Estado**: ✅ Completo
+- **Location**: `tests/core/domain/value_objects/test_*.py`
+- **What to test**: Validations, immutability, comparisons
+- **Example**: `test_email_address.py`
+- **Status**: ✅ Complete
 
 #### 3. **Core/Domain - Domain Services** ✅
-- **Ubicación**: `tests/core/domain/services/test_*.py`
-- **Qué testear**: Lógica de negocio pura, reglas de negocio
-- **Ejemplo**: `test_usuario_domain_service.py`
-- **Estado**: ✅ Completo
+- **Location**: `tests/core/domain/services/test_*.py`
+- **What to test**: Pure business logic, business rules
+- **Example**: `test_user_domain_service.py`
+- **Status**: ✅ Complete
 
 #### 4. **Core/Application - Use Cases** ✅
-- **Ubicación**: `tests/core/application/use_cases/test_*.py`
-- **Qué testear**: Orquestación, flujos de negocio, casos de error
-- **Ejemplo**: `test_create_usuario_use_case.py`
-- **Estado**: ✅ Completo (todos los use cases tienen tests)
+- **Location**: `tests/core/application/use_cases/test_*.py`
+- **What to test**: Orchestration, business flows, error cases
+- **Example**: `test_create_user_use_case.py`
+- **Status**: ✅ Complete (all use cases have tests)
 
 #### 5. **Infrastructure/Adapters - Repository Adapters** ✅
-- **Ubicación**: `tests/infrastructure/adapters/test_*_adapter.py`
-- **Qué testear**: Mapeo dominio ↔ infraestructura, operaciones CRUD
-- **Ejemplo**: `test_usuario_repository_postgres_adapter.py`
-- **Estado**: ✅ Completo
+- **Location**: `tests/infrastructure/adapters/test_*_adapter.py`
+- **What to test**: Domain ↔ infrastructure mapping, CRUD operations
+- **Example**: `test_user_repository_postgres_adapter.py`
+- **Status**: ✅ Complete
 
 #### 6. **Infrastructure/API - Routers** ✅
-- **Ubicación**: `tests/infrastructure/api/test_*_router.py`
-- **Qué testear**: Endpoints HTTP, validación de schemas, códigos de estado
-- **Ejemplo**: `test_usuario_router.py`
-- **Estado**: ✅ Completo
+- **Location**: `tests/infrastructure/api/test_*_router.py`
+- **What to test**: HTTP endpoints, schema validation, status codes
+- **Example**: `test_user_router.py`
+- **Status**: ✅ Complete
 
-### ❌ NO necesita pruebas directas
+### ❌ Does NOT need direct tests
 
 #### 1. **Core/Application - Ports (Interfaces)**
-- **Razón**: Son `Protocol` (contratos), no tienen implementación
-- **Cómo se testean**: Indirectamente a través de:
-  - Tests de Use Cases (mockean los ports)
-  - Tests de Adapters (implementan los ports)
-- **Ejemplo**: `UsuarioRepositoryPort` - NO necesita test directo
+- **Reason**: They are `Protocol` (contracts), have no implementation
+- **How they are tested**: Indirectly through:
+  - Use Case tests (mock the ports)
+  - Adapter tests (implement the ports)
+- **Example**: `UserRepositoryPort` - Does NOT need direct test
 
 #### 2. **Core/Application - DTOs**
-- **Razón**: Son dataclasses simples, sin lógica
-- **Cómo se testean**: Indirectamente a través de tests de Use Cases
-- **Ejemplo**: `CreateUsuarioDto` - NO necesita test directo
+- **Reason**: They are simple dataclasses, no logic
+- **How they are tested**: Indirectly through Use Case tests
+- **Example**: `CreateUserDto` - Does NOT need direct test
 
 #### 3. **Infrastructure/API - Schemas (Pydantic)**
-- **Razón**: Pydantic valida automáticamente
-- **Cómo se testean**: Indirectamente a través de tests de Routers
-- **Ejemplo**: `CreateUsuarioSchema` - NO necesita test directo
+- **Reason**: Pydantic validates automatically
+- **How they are tested**: Indirectly through Router tests
+- **Example**: `CreateUserSchema` - Does NOT need direct test
 
 #### 4. **Infrastructure/Database - Models (SQLAlchemy)**
-- **Razón**: Son mapeos ORM, sin lógica de negocio
-- **Cómo se testean**: Indirectamente a través de tests de Adapters
-- **Ejemplo**: `UsuarioModel` - NO necesita test directo
+- **Reason**: They are ORM mappings, no business logic
+- **How they are tested**: Indirectly through Adapter tests
+- **Example**: `UserModel` - Does NOT need direct test
 
 #### 5. **Infrastructure/Config - Settings**
-- **Razón**: Configuración simple, sin lógica
-- **Cómo se testean**: Indirectamente a través de tests de integración
-- **Ejemplo**: `Settings` - NO necesita test directo
+- **Reason**: Simple configuration, no logic
+- **How they are tested**: Indirectly through integration tests
+- **Example**: `Settings` - Does NOT need direct test
 
-## Resumen de Cobertura Actual
+## Current Coverage Summary
 
-### ✅ Completo (con tests)
-- ✅ **Entities**: `Usuario` - Tests completos
-- ✅ **Value Objects**: `EmailAddress` - Tests completos
-- ✅ **Domain Services**: `UsuarioDomainService` - Tests completos
-- ✅ **Use Cases**: Todos los 5 use cases - Tests completos
-  - `CreateUsuarioUseCase`
-  - `GetUsuarioUseCase`
-  - `ListUsuariosUseCase`
-  - `UpdateUsuarioUseCase`
-  - `DeleteUsuarioUseCase`
-- ✅ **Adapters**: `UsuarioRepositoryPostgresAdapter` - Tests completos
-- ✅ **Routers**: `usuario_router` - Tests completos
+### ✅ Complete (with tests)
+- ✅ **Entities**: `User` - Complete tests
+- ✅ **Value Objects**: `EmailAddress` - Complete tests
+- ✅ **Domain Services**: `UserDomainService` - Complete tests
+- ✅ **Use Cases**: All 5 use cases - Complete tests
+  - `CreateUserUseCase`
+  - `GetUserUseCase`
+  - `ListUsersUseCase`
+  - `UpdateUserUseCase`
+  - `DeleteUserUseCase`
+- ✅ **Adapters**: `UserRepositoryPostgresAdapter` - Complete tests
+- ✅ **Routers**: `user_router` - Complete tests
 
-### ❌ No necesita tests directos (correcto)
-- ❌ **Ports**: `UsuarioRepositoryPort` (Protocol, se testea indirectamente)
-- ❌ **DTOs**: `CreateUsuarioDto`, `UpdateUsuarioDto`, etc. (sin lógica)
-- ❌ **Schemas**: `CreateUsuarioSchema`, etc. (Pydantic valida automáticamente)
-- ❌ **Models**: `UsuarioModel` (ORM, se testea indirectamente)
+### ❌ Does not need direct tests (correct)
+- ❌ **Ports**: `UserRepositoryPort` (Protocol, tested indirectly)
+- ❌ **DTOs**: `CreateUserDto`, `UpdateUserDto`, etc. (no logic)
+- ❌ **Schemas**: `CreateUserSchema`, etc. (Pydantic validates automatically)
+- ❌ **Models**: `UserModel` (ORM, tested indirectly)
 
-## Estrategia de Testing
+## Testing Strategy
 
-### Tests Unitarios (Core)
+### Unit Tests (Core)
 ```
 tests/core/
 ├── domain/
 │   ├── entities/
-│   │   └── test_usuario.py                    ✅
+│   │   └── test_user.py                    ✅
 │   ├── value_objects/
 │   │   └── test_email_address.py              ✅
 │   └── services/
-│       └── test_usuario_domain_service.py     ✅
+│       └── test_user_domain_service.py     ✅
 └── application/
     └── use_cases/
-        ├── test_create_usuario_use_case.py    ✅
-        ├── test_get_usuario_use_case.py       ✅
-        ├── test_list_usuarios_use_case.py     ✅
-        ├── test_update_usuario_use_case.py    ✅
-        └── test_delete_usuario_use_case.py     ✅
+        ├── test_create_user_use_case.py    ✅
+        ├── test_get_user_use_case.py       ✅
+        ├── test_list_users_use_case.py     ✅
+        ├── test_update_user_use_case.py    ✅
+        └── test_delete_user_use_case.py     ✅
 ```
 
-**Características**:
-- Sin dependencias de infraestructura
-- Mocks de ports (no implementaciones reales)
-- Tests rápidos y aislados
+**Characteristics**:
+- No infrastructure dependencies
+- Port mocks (no real implementations)
+- Fast and isolated tests
 
-### Tests de Integración (Infrastructure)
+### Integration Tests (Infrastructure)
 ```
 tests/infrastructure/
 ├── adapters/
-│   └── test_usuario_repository_postgres_adapter.py  ✅
+│   └── test_user_repository_postgres_adapter.py  ✅
 └── api/
-    └── test_usuario_router.py                       ✅
+    └── test_user_router.py                       ✅
 ```
 
-**Características**:
-- Usan bases de datos reales (SQLite en memoria para tests)
-- TestClient de FastAPI para tests E2E
-- Verifican integración entre capas
+**Characteristics**:
+- Use real databases (SQLite in memory for tests)
+- FastAPI TestClient for E2E tests
+- Verify integration between layers
 
-## Conclusión
+## Conclusion
 
-**Tu proyecto tiene cobertura completa de lo que debe tener pruebas.**
+**Your project has complete coverage of what should have tests.**
 
-Los **Ports NO necesitan pruebas directas** porque:
-1. Son interfaces (`Protocol`), no tienen implementación
-2. Se testean indirectamente:
-   - En Use Cases: se mockean los ports
-   - En Adapters: se implementan los ports
+**Ports do NOT need direct tests** because:
+1. They are interfaces (`Protocol`), have no implementation
+2. They are tested indirectly:
+   - In Use Cases: ports are mocked
+   - In Adapters: ports are implemented
 
-Si quisieras validar que un adapter implementa correctamente un port, podrías usar **contract tests**, pero no es necesario para este proyecto.
-
+If you wanted to validate that an adapter correctly implements a port, you could use **contract tests**, but it's not necessary for this project.

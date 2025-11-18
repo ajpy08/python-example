@@ -18,8 +18,8 @@ def db_session():
     """Create a test database session."""
     engine = create_engine("sqlite:///:memory:", connect_args={"check_same_thread": False})
     Base.metadata.create_all(bind=engine)
-    Session = sessionmaker(bind=engine, autocommit=False, autoflush=False)
-    session = Session()
+    session_factory = sessionmaker(bind=engine, autocommit=False, autoflush=False)
+    session = session_factory()
     try:
         yield session
         session.commit()

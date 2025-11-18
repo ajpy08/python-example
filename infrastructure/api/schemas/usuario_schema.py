@@ -4,6 +4,10 @@ from datetime import datetime
 from typing import Optional
 from pydantic import BaseModel, EmailStr, Field, ConfigDict
 
+ACTIVO_DESCRIPTION = "Estado activo del usuario"
+USER_NAME_DESCRIPTION = "Nombre del usuario"
+USER_EMAIL_DESCRIPTION = "Email del usuario"
+
 
 class CreateUsuarioSchema(BaseModel):
     """Schema for creating a usuario."""
@@ -18,9 +22,9 @@ class CreateUsuarioSchema(BaseModel):
         }
     )
 
-    nombre: str = Field(..., min_length=1, max_length=255, description="Nombre del usuario")
-    email: EmailStr = Field(..., description="Email del usuario")
-    activo: bool = Field(default=True, description="Estado activo del usuario")
+    nombre: str = Field(..., min_length=1, max_length=255, description=USER_NAME_DESCRIPTION)
+    email: EmailStr = Field(..., description=USER_EMAIL_DESCRIPTION)
+    activo: bool = Field(default=True, description=ACTIVO_DESCRIPTION)
 
 
 class UpdateUsuarioSchema(BaseModel):
@@ -36,9 +40,9 @@ class UpdateUsuarioSchema(BaseModel):
         }
     )
 
-    nombre: Optional[str] = Field(None, min_length=1, max_length=255, description="Nombre del usuario")
-    email: Optional[EmailStr] = Field(None, description="Email del usuario")
-    activo: Optional[bool] = Field(None, description="Estado activo del usuario")
+    nombre: Optional[str] = Field(None, min_length=1, max_length=255, description=USER_NAME_DESCRIPTION)
+    email: Optional[EmailStr] = Field(None, description=USER_EMAIL_DESCRIPTION)
+    activo: Optional[bool] = Field(None, description=ACTIVO_DESCRIPTION)
 
 
 class UsuarioResponseSchema(BaseModel):
@@ -59,9 +63,9 @@ class UsuarioResponseSchema(BaseModel):
     )
 
     id: int = Field(..., description="ID del usuario")
-    nombre: str = Field(..., description="Nombre del usuario")
-    email: str = Field(..., description="Email del usuario")
-    activo: bool = Field(..., description="Estado activo del usuario")
+    nombre: str = Field(..., description=USER_NAME_DESCRIPTION)
+    email: str = Field(..., description=USER_EMAIL_DESCRIPTION)
+    activo: bool = Field(..., description=ACTIVO_DESCRIPTION)
     fecha_creacion: datetime = Field(..., description="Fecha de creación")
     fecha_actualizacion: datetime = Field(..., description="Fecha de actualización")
 
